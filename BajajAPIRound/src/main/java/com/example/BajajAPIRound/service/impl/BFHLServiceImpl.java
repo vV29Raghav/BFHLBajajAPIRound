@@ -1,5 +1,7 @@
 package com.example.BajajAPIRound.service.impl;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.BajajAPIRound.dto.BFHLRequestDTO;
 import com.example.BajajAPIRound.dto.BFHLResponseDTO;
@@ -7,97 +9,86 @@ import com.example.BajajAPIRound.service.BFHLService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BFHLServiceImpl implements BFHLService{
-    private static final String USER_ID =
-            "raghav_verma_29012006";
+public class BFHLServiceImpl implements BFHLService {
 
-    private static final String EMAIL =
-            "raghav1185.be23@chitkara.edu.in";
-
-    private static final String ROLL_NUMBER =
-            "2310991185";
+    // my details
+    private String user = "raghav_verma_29012006";
+    private String mail = "raghav1185.be23@chitkara.edu.in";
+    private String roll = "2310991185";
 
     @Override
     public BFHLResponseDTO process(BFHLRequestDTO request) {
+        BFHLResponseDTO res = new BFHLResponseDTO();
+        res.setIs_success(true);
+        res.setUser_id(user);
+        res.setEmail(mail);
+        res.setRoll_number(roll);
 
-        List<String> oddNumbers = new ArrayList<>();
-        List<String> evenNumbers = new ArrayList<>();
-        List<String> alphabets = new ArrayList<>();
-        List<String> specialCharacters = new ArrayList<>();
+        List<String> odds = new ArrayList<>();
+        List<String> evens = new ArrayList<>();
+        List<String> alphas = new ArrayList<>();
+        List<String> spl = new ArrayList<>();
+        
+        long totalSum = 0;
+        String alphaStr = "";
 
-        long sum = 0;
-
-        StringBuilder alphabetCharacters = new StringBuilder();
-
-        List<String> data = request.getData();
-        if (data == null) {
-            data = Collections.emptyList();
+        // check if empty
+        List<String> inputData = request.getData();
+        if (inputData == null) {
+            inputData = new ArrayList<>();
         }
 
-        for (String value : data) {
-
-            if (value.matches("\\d+")) {
-
-                long number = Long.parseLong(value);
-
-                sum += number;
-
-                if (number % 2 == 0) {
-                    evenNumbers.add(value);
+        // process array
+        for (int i = 0; i < inputData.size(); i++) {
+            String val = inputData.get(i);
+            
+            try {
+                // if it is a number
+                long num = Long.parseLong(val);
+                totalSum = totalSum + num;
+                
+                if (num % 2 == 0) {
+                    evens.add(val);
                 } else {
-                    oddNumbers.add(value);
+                    odds.add(val);
                 }
-
-            }
-            else if (value.matches("[a-zA-Z]+")) {
-
-                alphabets.add(value.toUpperCase());
-
-                alphabetCharacters.append(value);
-            }
-            else {
-                specialCharacters.add(value);
+            } catch (Exception e) {
+                // not a number, check alphabet
+                if (val.matches("[a-zA-Z]+")) {
+                    alphas.add(val.toUpperCase());
+                    alphaStr = alphaStr + val;
+                } else {
+                    // special chars
+                    spl.add(val);
+                }
             }
         }
 
-        String concatString =
-                buildAlternatingCaps(
-                        alphabetCharacters.reverse().toString()
-                );
+        // reverse the string
+        String reversed = "";
+        for(int k = alphaStr.length() - 1; k >= 0; k--) {
+            reversed += alphaStr.charAt(k);
+        }
 
-        BFHLResponseDTO response = new BFHLResponseDTO();
-
-        response.setIs_success(true);
-        response.setUser_id(USER_ID);
-        response.setEmail(EMAIL);
-        response.setRoll_number(ROLL_NUMBER);
-
-        response.setOdd_numbers(oddNumbers);
-        response.setEven_numbers(evenNumbers);
-        response.setAlphabets(alphabets);
-        response.setSpecial_characters(specialCharacters);
-
-        response.setSum(String.valueOf(sum));
-        response.setConcat_string(concatString);
-
-        return response;
-    }
-
-    private String buildAlternatingCaps(String input) {
-
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < input.length(); i++) {
-
-            char c = input.charAt(i);
-
-            if (i % 2 == 0) {
-                result.append(Character.toUpperCase(c));
+        // alternating caps
+        String finalConcat = "";
+        for (int j = 0; j < reversed.length(); j++) {
+            char c = reversed.charAt(j);
+            if (j % 2 == 0) {
+                finalConcat += Character.toUpperCase(c);
             } else {
-                result.append(Character.toLowerCase(c));
+                finalConcat += Character.toLowerCase(c);
             }
         }
 
-        return result.toString();
+        // set response
+        res.setOdd_numbers(odds);
+        res.setEven_numbers(evens);
+        res.setAlphabets(alphas);
+        res.setSpecial_characters(spl);
+        res.setSum(String.valueOf(totalSum));
+        res.setConcat_string(finalConcat);
+
+        return res;
     }
 }
