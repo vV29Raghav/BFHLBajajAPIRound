@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class BFHLServiceImpl implements BFHLService{
     private static final String USER_ID =
-            "raghav_kumar_24062026";
+            "raghav_verma_29012006";
 
     private static final String EMAIL =
-            "raghav@gmail.com";
+            "raghav1185.be23@chitkara.edu.in";
 
     private static final String ROLL_NUMBER =
-            "2210999999";
+            "2310991185";
 
     @Override
     public BFHLResponseDTO process(BFHLRequestDTO request) {
@@ -29,7 +29,12 @@ public class BFHLServiceImpl implements BFHLService{
 
         StringBuilder alphabetCharacters = new StringBuilder();
 
-        for (String value : request.getData()) {
+        List<String> data = request.getData();
+        if (data == null) {
+            data = Collections.emptyList();
+        }
+
+        for (String value : data) {
 
             if (value.matches("\\d+")) {
 
